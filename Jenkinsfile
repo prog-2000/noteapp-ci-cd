@@ -1,27 +1,27 @@
-@Library('Shared')_
 pipeline{
-    agent { label 'dev-server'}
+    agent any
     
     stages{
         stage("Code clone"){
             steps{
-                sh "whoami"
-            clone("https://github.com/prog-2000/noteapp-ci-cd.git","main")
+                echo "Cloning the code"
+                get url: "https://github.com/prog-2000/noteapp-ci-cd.git", branch: "main"
             }
         }
         stage("Code Build"){
             steps{
-            dockerbuild("notes-app","latest")
+                echo "Building the image"
+                sh "docker build -t my-node-app ."
             }
         }
         stage("Push to DockerHub"){
             steps{
-                dockerpush("dockerHubCreds","notes-app","latest")
+                echo "Push code on dockerhub"
             }
         }
         stage("Deploy"){
             steps{
-                deploy()
+                echo "Deploy the code"
             }
         }
         
