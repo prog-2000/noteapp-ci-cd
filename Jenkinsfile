@@ -1,29 +1,37 @@
-pipeline{
-    agent any
+pipeline {
+    agent any 
     
-    stages{
-        stage("Code clone"){
-            steps{
+    stages {
+        stage("Clone Code") {
+            steps {
                 echo "Cloning the code"
-                get url: "https://github.com/prog-2000/noteapp-ci-cd.git", branch: "main"
+                git url: "https://github.com/prog-2000/noteapp-ci-cd.git", branch: "main"
             }
         }
-        stage("Code Build"){
-            steps{
+
+        stage("Build") {
+            steps {
                 echo "Building the image"
-                sh "docker build -t my-node-app ."
+                bat 'docker build -t my-note-app .'
             }
         }
-        stage("Push to DockerHub"){
-            steps{
-                echo "Push code on dockerhub"
+
+        stage("Push to Docker Hub") {
+            steps {
+                echo "Pushing the image to Docker Hub"
+                withCredentials([usernamePassword(credentialsId: "dockerhub", passwordVariable: "dockerHubPass", usernameVariable: "dockerHubUser")]) {
+                    bat 'docker tag my-note-app %dockerHubUser%/my-note-app:latest'
+                    bat 'docker login -u %dockerHubUser% -p %dockerHubPass%'
+                    bat 'docker push %dockerHubUser%/my-note-app:latest'
+                }
             }
         }
-        stage("Deploy"){
-            steps{
-                echo "Deploy the code"
+
+        stage("Deploy") {
+            steps {
+                echo "Deploying the container"
+                bat 'docker-compose down && docker-compose up -d'
             }
         }
-        
     }
 }
