@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   nginx:
-    build: ./nginx
-    image: nginx
+  #  build: ./nginx
+    image: tusharpatil07/nginx:latest
     container_name: "nginx_cont"
     ports:
       - "80:80"
@@ -14,9 +14,9 @@ services:
       - notes-app-nw
 
   django_app:
-    build:
-      context: .
-    image: django_app
+  #  build:
+  #    context: . 
+    image: tusharpatil07/django_app:latest
     container_name: "django_cont"
     ports:
       - "8000:8000"
